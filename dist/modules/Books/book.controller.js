@@ -39,8 +39,8 @@ const createBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
         if (Object.keys(errors).length > 0) {
             return res.json({
-                success: false,
                 message: "Validation failed",
+                success: false,
                 error: {
                     name: "ManualValidationError",
                     errors

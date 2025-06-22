@@ -34,8 +34,8 @@ export const createBook = async (req: Request, res: Response): Promise<any> => {
 
         if (Object.keys(errors).length > 0) {
             return res.json({
-                success: false,
                 message: "Validation failed",
+                success: false,
                 error: {
                     name: "ManualValidationError",
                     errors
