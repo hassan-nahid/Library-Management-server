@@ -15,14 +15,36 @@ const book_model_1 = require("./book.model");
 const createBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { title, author, genre, isbn, description } = req.body;
-        if (typeof title !== 'string' ||
-            typeof author !== 'string' ||
-            typeof genre !== 'string' ||
-            typeof isbn !== 'string' ||
-            (description && typeof description !== 'string')) {
-            return res.send({
+        const fields = { title, author, genre, isbn };
+        const errors = {};
+        for (const [key, value] of Object.entries(fields)) {
+            if (typeof value !== 'string') {
+                errors[key] = {
+                    message: `${key[0].toUpperCase() + key.slice(1)} must be a string`,
+                    name: "ValidatorError",
+                    kind: "type",
+                    path: key,
+                    value: value !== null && value !== void 0 ? value : null
+                };
+            }
+        }
+        if (description && typeof description !== 'string') {
+            errors.description = {
+                message: "Description must be a string if provided",
+                name: "ValidatorError",
+                kind: "type",
+                path: "description",
+                value: description
+            };
+        }
+        if (Object.keys(errors).length > 0) {
+            return res.json({
                 success: false,
-                message: "Title must be a string",
+                message: "Validation failed",
+                error: {
+                    name: "ManualValidationError",
+                    errors
+                }
             });
         }
         const book = new book_model_1.Book(req.body);
