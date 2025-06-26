@@ -6,6 +6,6 @@ const bookRoute = (0, express_1.Router)();
 bookRoute.post("/", book_controller_1.createBook);
 bookRoute.get("/", book_controller_1.getAllBook);
 bookRoute.get("/:bookId", book_controller_1.getBookByID);
-bookRoute.patch("/:bookId", book_controller_1.updateBookByID);
+bookRoute.put("/:bookId", book_controller_1.updateBookByID);
 bookRoute.delete("/:bookId", book_controller_1.deleteBookByID);
 exports.default = bookRoute;

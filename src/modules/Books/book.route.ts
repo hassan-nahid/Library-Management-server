@@ -6,7 +6,7 @@ const bookRoute = Router()
 bookRoute.post("/", createBook)
 bookRoute.get("/", getAllBook)
 bookRoute.get("/:bookId", getBookByID)
-bookRoute.patch("/:bookId", updateBookByID)
+bookRoute.put("/:bookId", updateBookByID)
 bookRoute.delete("/:bookId", deleteBookByID)
 
 export default bookRoute;

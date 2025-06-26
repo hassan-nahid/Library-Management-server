@@ -33,7 +33,7 @@ export const createBook = async (req: Request, res: Response): Promise<any> => {
         }
 
         if (Object.keys(errors).length > 0) {
-            return res.json({
+            return res.status(500).json({
                 message: "Validation failed",
                 success: false,
                 error: {
@@ -47,20 +47,20 @@ export const createBook = async (req: Request, res: Response): Promise<any> => {
         const book = new Book(req.body);
         const data = await book.save();
 
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Book created successfully",
             data,
         });
     } catch (error: any) {
         if (error.name === "ValidationError") {
-            res.send({
+            res.status(500).send({
                 message: "Validation failed",
                 success: false,
                 error: error,
             });
         } else {
-            res.send({
+            res.status(500).send({
                 message: "Error in book creation",
                 success: false,
                 error: error,
@@ -92,7 +92,7 @@ export const getAllBook = async (req: Request, res: Response) => {
             .sort(sortCondition)
             .limit(resultLimit)
 
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Books retrieved successfully",
             data
@@ -101,7 +101,7 @@ export const getAllBook = async (req: Request, res: Response) => {
 
     } catch (error: any) {
 
-        res.send({
+        res.status(500).send({
             message: "Error in retrieved books",
             success: false,
             error: error,
@@ -118,13 +118,13 @@ export const getBookByID = async (req: Request, res: Response) => {
         const bookId = req.params.bookId;
         const data = await Book.findById(bookId)
 
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Book retrieved successfully",
             data
         })
     } catch (error) {
-        res.send({
+        res.status(500).send({
             message: "Error in retrieved book",
             success: false,
             error: error,
@@ -139,20 +139,20 @@ export const updateBookByID = async (req: Request, res: Response) => {
         const playload = req.body;
         const data = await Book.findByIdAndUpdate(bookId, playload, { new: true, runValidators: true })
 
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Book updated successfully",
             data
         })
     } catch (error: any) {
         if (error.name === "ValidationError") {
-            res.send({
+            res.status(500).send({
                 message: "Validation failed",
                 success: false,
                 error: error,
             });
         } else {
-            res.send({
+            res.status(600).send({
                 message: "Error in updating book",
                 success: false,
                 error: error,
@@ -167,13 +167,13 @@ export const deleteBookByID = async (req: Request, res: Response) => {
 
         const data = await Book.findByIdAndDelete(bookId, { new: true })
 
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Book deleted successfully",
             data: null
         })
     } catch (error: any) {
-        res.send({
+        res.status(500).send({
             message: "Error in deleting book",
             success: false,
             error: error,

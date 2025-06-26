@@ -8,14 +8,14 @@ export const createBorrowBook = async (req: Request, res: Response) => {
     const borrow = new Borrow(playload);
     const data = await borrow.save();
 
-    res.send({
+    res.status(200).send({
       success: true,
       message: "Book borrowed successfully",
       data,
     });
   } catch (error: any) {
     if (error.name === "ValidationError" || error.message === "Not enough copies available") {
-      res.send({
+      res.status(500).send({
         success: false,
         message: "Validation failed",
         error: {
@@ -27,7 +27,7 @@ export const createBorrowBook = async (req: Request, res: Response) => {
     }
 
     else {
-      res.send({
+      res.status(500).send({
         success: false,
         message: "Error in borrowing book",
         error: error.message || error,
@@ -49,7 +49,7 @@ export const getBorrowedBooksSummary = async (req: Request, res: Response) => {
       },
       {
         $lookup: {
-          from: "books", 
+          from: "books",
           localField: "_id",
           foreignField: "_id",
           as: "bookInfo"
@@ -70,13 +70,13 @@ export const getBorrowedBooksSummary = async (req: Request, res: Response) => {
       }
     ]);
 
-    res.send({
+    res.status(200).send({
       success: true,
       message: "Borrowed books summary retrieved successfully",
       data
     });
   } catch (error) {
-    res.send({
+    res.status(500).send({
       success: false,
       message: "Error retrieving borrowed books summary",
       error

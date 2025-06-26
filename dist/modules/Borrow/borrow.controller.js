@@ -16,7 +16,7 @@ const createBorrowBook = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const playload = req.body;
         const borrow = new borrow_model_1.Borrow(playload);
         const data = yield borrow.save();
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Book borrowed successfully",
             data,
@@ -24,7 +24,7 @@ const createBorrowBook = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
     catch (error) {
         if (error.name === "ValidationError" || error.message === "Not enough copies available") {
-            res.send({
+            res.status(500).send({
                 success: false,
                 message: "Validation failed",
                 error: {
@@ -35,7 +35,7 @@ const createBorrowBook = (req, res) => __awaiter(void 0, void 0, void 0, functio
             });
         }
         else {
-            res.send({
+            res.status(500).send({
                 success: false,
                 message: "Error in borrowing book",
                 error: error.message || error,
@@ -75,14 +75,14 @@ const getBorrowedBooksSummary = (req, res) => __awaiter(void 0, void 0, void 0, 
                 }
             }
         ]);
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Borrowed books summary retrieved successfully",
             data
         });
     }
     catch (error) {
-        res.send({
+        res.status(500).send({
             success: false,
             message: "Error retrieving borrowed books summary",
             error

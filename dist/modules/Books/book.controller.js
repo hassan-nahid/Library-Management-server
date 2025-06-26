@@ -38,7 +38,7 @@ const createBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             };
         }
         if (Object.keys(errors).length > 0) {
-            return res.json({
+            return res.status(500).json({
                 message: "Validation failed",
                 success: false,
                 error: {
@@ -49,7 +49,7 @@ const createBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
         const book = new book_model_1.Book(req.body);
         const data = yield book.save();
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Book created successfully",
             data,
@@ -57,14 +57,14 @@ const createBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (error) {
         if (error.name === "ValidationError") {
-            res.send({
+            res.status(500).send({
                 message: "Validation failed",
                 success: false,
                 error: error,
             });
         }
         else {
-            res.send({
+            res.status(500).send({
                 message: "Error in book creation",
                 success: false,
                 error: error,
@@ -89,14 +89,14 @@ const getAllBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const data = yield book_model_1.Book.find(query)
             .sort(sortCondition)
             .limit(resultLimit);
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Books retrieved successfully",
             data
         });
     }
     catch (error) {
-        res.send({
+        res.status(500).send({
             message: "Error in retrieved books",
             success: false,
             error: error,
@@ -109,14 +109,14 @@ const getBookByID = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const bookId = req.params.bookId;
         const data = yield book_model_1.Book.findById(bookId);
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Book retrieved successfully",
             data
         });
     }
     catch (error) {
-        res.send({
+        res.status(500).send({
             message: "Error in retrieved book",
             success: false,
             error: error,
@@ -129,7 +129,7 @@ const updateBookByID = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const bookId = req.params.bookId;
         const playload = req.body;
         const data = yield book_model_1.Book.findByIdAndUpdate(bookId, playload, { new: true, runValidators: true });
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Book updated successfully",
             data
@@ -137,14 +137,14 @@ const updateBookByID = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
     catch (error) {
         if (error.name === "ValidationError") {
-            res.send({
+            res.status(500).send({
                 message: "Validation failed",
                 success: false,
                 error: error,
             });
         }
         else {
-            res.send({
+            res.status(600).send({
                 message: "Error in updating book",
                 success: false,
                 error: error,
@@ -157,14 +157,14 @@ const deleteBookByID = (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const bookId = req.params.bookId;
         const data = yield book_model_1.Book.findByIdAndDelete(bookId, { new: true });
-        res.send({
+        res.status(200).send({
             success: true,
             message: "Book deleted successfully",
             data: null
         });
     }
     catch (error) {
-        res.send({
+        res.status(500).send({
             message: "Error in deleting book",
             success: false,
             error: error,
