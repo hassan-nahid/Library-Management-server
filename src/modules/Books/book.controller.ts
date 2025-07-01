@@ -71,44 +71,50 @@ export const createBook = async (req: Request, res: Response): Promise<any> => {
 
 // get all book with query
 export const getAllBook = async (req: Request, res: Response) => {
-    try {
-        const { filter, sortBy, sort, limit } = req.query;
+  try {
+    const { filter, sortBy, sort, limit = "10", page = "1" } = req.query;
 
-        const query: any = {};
+    const query: any = {};
 
-
-        if (filter) {
-            query.genre = filter;
-        }
-
-        const sortCondition: any = {};
-        if (sortBy) {
-            sortCondition[sortBy as string] = sort === "asc" ? 1 : -1;
-        }
-
-        const resultLimit = limit ? parseInt(limit as string) : 10;
-
-        const data = await Book.find(query)
-            .sort(sortCondition)
-            .limit(resultLimit)
-
-        res.status(200).send({
-            success: true,
-            message: "Books retrieved successfully",
-            data
-        })
-
-
-    } catch (error: any) {
-
-        res.status(500).send({
-            message: "Error in retrieved books",
-            success: false,
-            error: error,
-        });
-
+    if (filter) {
+      query.genre = filter;
     }
+
+    const sortCondition: any = {};
+    if (sortBy) {
+      sortCondition[sortBy as string] = sort === "asc" ? 1 : -1;
+    }
+
+    const limitNumber = parseInt(limit as string) || 10;
+    const pageNumber = parseInt(page as string) || 1;
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const data = await Book.find(query)
+      .sort(sortCondition)
+      .skip(skip)
+      .limit(limitNumber);
+
+    const total = await Book.countDocuments(query);
+
+    res.status(200).send({
+      success: true,
+      message: "Books retrieved successfully",
+      data,
+      meta: {
+        total,
+        page: pageNumber,
+        limit: limitNumber,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).send({
+      message: "Error retrieving books",
+      success: false,
+      error: error,
+    });
+  }
 };
+
 
 
 // get single book by id

@@ -76,7 +76,7 @@ exports.createBook = createBook;
 // get all book with query
 const getAllBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { filter, sortBy, sort, limit } = req.query;
+        const { filter, sortBy, sort, limit = "10", page = "1" } = req.query;
         const query = {};
         if (filter) {
             query.genre = filter;
@@ -85,19 +85,28 @@ const getAllBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (sortBy) {
             sortCondition[sortBy] = sort === "asc" ? 1 : -1;
         }
-        const resultLimit = limit ? parseInt(limit) : 10;
+        const limitNumber = parseInt(limit) || 10;
+        const pageNumber = parseInt(page) || 1;
+        const skip = (pageNumber - 1) * limitNumber;
         const data = yield book_model_1.Book.find(query)
             .sort(sortCondition)
-            .limit(resultLimit);
+            .skip(skip)
+            .limit(limitNumber);
+        const total = yield book_model_1.Book.countDocuments(query);
         res.status(200).send({
             success: true,
             message: "Books retrieved successfully",
-            data
+            data,
+            meta: {
+                total,
+                page: pageNumber,
+                limit: limitNumber,
+            },
         });
     }
     catch (error) {
         res.status(500).send({
-            message: "Error in retrieved books",
+            message: "Error retrieving books",
             success: false,
             error: error,
         });
