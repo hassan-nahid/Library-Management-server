@@ -2,6 +2,7 @@ import express, { Request, Response } from "express"
 import mongoose from "mongoose"
 import config from "./config"
 import routes from "./modules/routes"
+import cors from "cors"
 
 
 const app = express()
@@ -10,6 +11,7 @@ app.use(express.json())
 // routes
 app.use(routes)
 
+app.use(cors())
 
 
 
