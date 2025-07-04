@@ -59,6 +59,17 @@ export const createBook = async (req: Request, res: Response): Promise<any> => {
                 success: false,
                 error: error,
             });
+        } else if (error.code === 11000 && error.keyPattern?.isbn) {
+            // ✅ Duplicate ISBN error handle
+            res.status(400).send({
+                message: "ISBN must be unique",
+                success: false,
+                error: {
+                    name: "DuplicateKeyError",
+                    path: "isbn",
+                    value: req.body.isbn,
+                },
+            });
         } else {
             res.status(500).send({
                 message: "Error in book creation",
@@ -71,48 +82,48 @@ export const createBook = async (req: Request, res: Response): Promise<any> => {
 
 // get all book with query
 export const getAllBook = async (req: Request, res: Response) => {
-  try {
-    const { filter, sortBy, sort, limit = "10", page = "1" } = req.query;
+    try {
+        const { filter, sortBy, sort, limit = "10", page = "1" } = req.query;
 
-    const query: any = {};
+        const query: any = {};
 
-    if (filter) {
-      query.genre = filter;
+        if (filter) {
+            query.genre = filter;
+        }
+
+        const sortCondition: any = {};
+        if (sortBy) {
+            sortCondition[sortBy as string] = sort === "asc" ? 1 : -1;
+        }
+
+        const limitNumber = parseInt(limit as string) || 10;
+        const pageNumber = parseInt(page as string) || 1;
+        const skip = (pageNumber - 1) * limitNumber;
+
+        const data = await Book.find(query)
+            .sort(sortCondition)
+            .skip(skip)
+            .limit(limitNumber);
+
+        const total = await Book.countDocuments(query);
+
+        res.status(200).send({
+            success: true,
+            message: "Books retrieved successfully",
+            data,
+            meta: {
+                total,
+                page: pageNumber,
+                limit: limitNumber,
+            },
+        });
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error retrieving books",
+            success: false,
+            error: error,
+        });
     }
-
-    const sortCondition: any = {};
-    if (sortBy) {
-      sortCondition[sortBy as string] = sort === "asc" ? 1 : -1;
-    }
-
-    const limitNumber = parseInt(limit as string) || 10;
-    const pageNumber = parseInt(page as string) || 1;
-    const skip = (pageNumber - 1) * limitNumber;
-
-    const data = await Book.find(query)
-      .sort(sortCondition)
-      .skip(skip)
-      .limit(limitNumber);
-
-    const total = await Book.countDocuments(query);
-
-    res.status(200).send({
-      success: true,
-      message: "Books retrieved successfully",
-      data,
-      meta: {
-        total,
-        page: pageNumber,
-        limit: limitNumber,
-      },
-    });
-  } catch (error: any) {
-    res.status(500).send({
-      message: "Error retrieving books",
-      success: false,
-      error: error,
-    });
-  }
 };
 
 

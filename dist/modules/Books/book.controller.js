@@ -13,6 +13,7 @@ exports.deleteBookByID = exports.updateBookByID = exports.getBookByID = exports.
 const book_model_1 = require("./book.model");
 // create book
 const createBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const { title, author, genre, isbn, description } = req.body;
         const fields = { title, author, genre, isbn };
@@ -61,6 +62,18 @@ const createBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 message: "Validation failed",
                 success: false,
                 error: error,
+            });
+        }
+        else if (error.code === 11000 && ((_a = error.keyPattern) === null || _a === void 0 ? void 0 : _a.isbn)) {
+            // ✅ Duplicate ISBN error handle
+            res.status(400).send({
+                message: "ISBN must be unique",
+                success: false,
+                error: {
+                    name: "DuplicateKeyError",
+                    path: "isbn",
+                    value: req.body.isbn,
+                },
             });
         }
         else {

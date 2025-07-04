@@ -31,4 +31,18 @@ bookSchema.methods.updateAvailability = function () {
         }
     });
 };
+bookSchema.post("findOneAndUpdate", function (doc) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!doc)
+            return;
+        if (doc.copies === 0 && doc.available !== false) {
+            doc.available = false;
+            yield doc.save();
+        }
+        else if (doc.copies > 0 && doc.available !== true) {
+            doc.available = true;
+            yield doc.save();
+        }
+    });
+});
 exports.Book = (0, mongoose_1.model)("Book", bookSchema);

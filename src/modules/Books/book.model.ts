@@ -21,4 +21,18 @@ bookSchema.methods.updateAvailability = async function () {
   }
 };
 
+bookSchema.post("findOneAndUpdate", async function (doc) {
+  if (!doc) return;
+
+  if (doc.copies === 0 && doc.available !== false) {
+    doc.available = false;
+    await doc.save();
+  } else if (doc.copies > 0 && doc.available !== true) {
+    doc.available = true;
+    await doc.save();
+  }
+});
+
+
+
 export const Book = model<IBook, any>("Book", bookSchema);
